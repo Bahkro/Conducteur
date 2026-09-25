@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestionnaire de Conducteur d'Événement</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: var(--card);
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+    h1 { margin-top: 0; font-size: 1.5rem; color: var(--primary); }
+    .header-controls {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 15px;
+      background: #eff6ff;
+      border-radius: 8px;
+    }
+    label { font-weight: 600; font-size: 0.9rem; }
+    input[type="time"], input[type="number"], input[type="text"] {
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    th { background: #f1f5f9; font-size: 0.85rem; text-transform: uppercase; }
+    .time-col { font-weight: bold; color: var(--primary); width: 90px; }
+    .duration-col { width: 90px; }
+    .btn {
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-danger { background: #ef4444; color: white; }
+    .btn-secondary { background: #64748b; color: white; }
+    .actions-bar {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    @media print {
+      .header-controls, .actions-bar, .btn-action { display: none !important; }
+      body { background: white; padding: 0; }
+      .container { box-shadow: none; padding: 0; max-width: 100%; }
+      input { border: none !important; background: transparent !important; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Conducteur d'Événement — Assemblée Générale</h1>
+  
+  <div class="header-controls">
+    <div>
+      <label for="startTime">Heure de début :</label>
+      <input type="time" id="startTime" value="09:00" onchange="recalculateTiming()">
+    </div>
+    <div>
+      <label>Fin estimée :</label>
+      <span id="endTimeDisplay" style="font-weight: bold; color: var(--primary);">--:--</span>
+    </div>
+  </div>
+
+  <table id="scheduleTable">
+    <thead>
+      <tr>
+        <th>Heure</th>
+        <th>Durée (min)</th>
+        <th>Thème / Sujet</th>
+        <th>Intervenant(s)</th>
+        <th class="btn-action">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="scheduleBody"></tbody>
+  </table>
+
+  <div class="actions-bar">
+    <button class="btn btn-primary" onclick="addRow()">+ Ajouter une séquence</button>
+    <div>
+      <button class="btn btn-secondary" onclick="window.print()">Imprimer / PDF</button>
+      <button class="btn btn-secondary" onclick="exportCSV()">Exporter CSV</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Données initiales basées sur ton fichier Excel
+  let items = [
+    { duration: 5, theme: "Accueil", speaker: "Loïc" },
+    { duration: 5, theme: "Appel des signatures", speaker: "Loïc" },
+    { duration: 10, theme: "Introduction", speaker: "Loïc" },
+    { duration: 10, theme: "Rapport moral", speaker: "Loïc & Perrine" },
+    { duration: 5, theme: "Questions - Réponses", speaker: "Loïc & Sylvain" },
+    { duration: 30, theme: "La phénylcétonurie et les recommandations européennes 2025", speaker: "Pr. Labarthe" },
+    { duration: 5, theme: "Questions - Réponses", speaker: "" },
+    { duration: 30, theme: "La recherche clinique à Tours", speaker: "Pr Maillot & Yann Dos Santos" },
+    { duration: 5, theme: "Questions - Réponses", speaker: "" },
+    { duration: 10, theme: "Rapport d'activités", speaker: "Loïc & Sylvain" },
+    { duration: 10, theme: "Conseil des jeunes", speaker: "Charlène" }
+  ];
+
+  function render() {
+    const tbody = document.getElementById('scheduleBody');
+    tbody.innerHTML = '';
+    
+    items.forEach((item, index) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="time-col" id="time-${index}">--:--</td>
+        <td class="duration-col">
+          <input type="number" value="${item.duration}" min="1" style="width: 60px;" onchange="updateDuration(${index}, this.value)">
+        </td>
+        <td>
+          <input type="text" value="${item.theme}" style="width: 95%;" onchange="updateText(${index}, 'theme', this.value)">
+        </td>
+        <td>
+          <input type="text" value="${item.speaker}" style="width: 95%;" onchange="updateText(${index}, 'speaker', this.value)">
+        </td>
+        <td class="btn-action">
+          <button class="btn btn-secondary" onclick="moveRow(${index}, -1)">▲</button>
+          <button class="btn btn-secondary" onclick="moveRow(${index}, 1)">▼</button>
+          <button class="btn btn-danger" onclick="deleteRow(${index})">✕</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+    recalculateTiming();
+  }
+
+  function recalculateTiming() {
+    const startInput = document.getElementById('startTime').value;
+    if (!startInput) return;
+
+    let [hours, minutes] = startInput.split(':').map(Number);
+    let currentMinutes = hours * 60 + minutes;
+
+    items.forEach((item, index) => {
+      const h = Math.floor(currentMinutes / 60) % 24;
+      const m = currentMinutes % 60;
+      const timeStr = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+      
+      const timeCell = document.getElementById(`time-${index}`);
+      if (timeCell) timeCell.innerText = timeStr;
+
+      currentMinutes += parseInt(item.duration || 0, 10);
+    });
+
+    const endH = Math.floor(currentMinutes / 60) % 24;
+    const endM = currentMinutes % 60;
+    document.getElementById('endTimeDisplay').innerText = `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`;
+  }
+
+  function updateDuration(index, val) {
+    items[index].duration = parseInt(val, 10) || 0;
+    recalculateTiming();
+  }
+
+  function updateText(index, field, val) {
+    items[index][field] = val;
+  }
+
+  function addRow() {
+    items.push({ duration: 10, theme: "Nouvelle séquence", speaker: "" });
+    render();
+  }
+
+  function deleteRow(index) {
+    items.splice(index, 1);
+    render();
+  }
+
+  function moveRow(index, direction) {
+    const newIndex = index + direction;
+    if (newIndex < 0 || newIndex >= items.length) return;
+    const temp = items[index];
+    items[index] = items[newIndex];
+    items[newIndex] = temp;
+    render();
+  }
+
+  function exportCSV() {
+    let csv = "Heure;Duree (min);Theme;Intervenant\n";
+    let startInput = document.getElementById('startTime').value;
+    let [hours, minutes] = startInput.split(':').map(Number);
+    let currentMinutes = hours * 60 + minutes;
+
+    items.forEach(item => {
+      const h = Math.floor(currentMinutes / 60) % 24;
+      const m = currentMinutes % 60;
+      const timeStr = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+      csv += `"${timeStr}";"${item.duration}";"${item.theme.replace(/"/g, '""')}";"${item.speaker.replace(/"/g, '""')}"\n`;
+      currentMinutes += parseInt(item.duration || 0, 10);
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "conducteur_ag.csv";
+    link.click();
+  }
+
+  // Initialisation au chargement
+  render();
+</script>
+
+</body>
+</html>
