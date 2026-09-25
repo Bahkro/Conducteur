@@ -2,97 +2,300 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Gestionnaire de Conducteur d'Événement</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conducteur - Association Les Feux Follets</title>
+  <!-- Google Fonts: Roboto & Roboto Condensed -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  
   <style>
     :root {
-      --primary: #2563eb;
-      --bg: #f8fafc;
+      --primary: #da8f24;
+      --primary-dark: #b87318;
+      --primary-light: #fdf6ec;
+      --bg: #f4f6f8;
       --card: #ffffff;
       --border: #e2e8f0;
-      --text: #0f172a;
+      --text: #1e293b;
+      --text-muted: #64748b;
     }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: 'Roboto', sans-serif;
       background-color: var(--bg);
       color: var(--text);
       margin: 0;
-      padding: 20px;
+      padding: 30px 15px;
     }
+
     .container {
-      max-width: 1000px;
+      max-width: 1050px;
       margin: 0 auto;
       background: var(--card);
-      padding: 25px;
+      padding: 30px;
       border-radius: 12px;
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+      border-top: 6px solid var(--primary);
     }
-    h1 { margin-top: 0; font-size: 1.5rem; color: var(--primary); }
+
+    /* Headings with Roboto Condensed Bold */
+    h1, h2, h3, th {
+      font-family: 'Roboto Condensed', sans-serif;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .header-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 25px;
+      border-bottom: 2px solid var(--primary-light);
+      padding-bottom: 15px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      color: var(--text);
+    }
+
+    .brand-badge {
+      background-color: var(--primary);
+      color: white;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-family: 'Roboto Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+    }
+
     .header-controls {
       display: flex;
-      gap: 20px;
+      gap: 25px;
       align-items: center;
-      margin-bottom: 20px;
-      padding: 15px;
-      background: #eff6ff;
+      margin-bottom: 25px;
+      padding: 18px;
+      background: var(--primary-light);
       border-radius: 8px;
+      border: 1px solid rgba(218, 143, 36, 0.2);
     }
-    label { font-weight: 600; font-size: 0.9rem; }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    label {
+      font-weight: 500;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
     input[type="time"], input[type="number"], input[type="text"] {
-      padding: 6px 10px;
+      padding: 8px 12px;
       border: 1px solid var(--border);
       border-radius: 6px;
-      font-size: 0.9rem;
+      font-family: 'Roboto', sans-serif;
+      font-size: 0.95rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
+
+    input[type="time"]:focus, input[type="number"]:focus, input[type="text"]:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(218, 143, 36, 0.2);
+    }
+
+    .end-time-box {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: var(--primary-dark);
+      background: white;
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 10px;
     }
-    th, td {
-      padding: 10px;
+
+    th {
+      background: var(--primary);
+      color: white;
+      padding: 12px 14px;
       text-align: left;
-      border-bottom: 1px solid var(--border);
+      font-size: 0.95rem;
     }
-    th { background: #f1f5f9; font-size: 0.85rem; text-transform: uppercase; }
-    .time-col { font-weight: bold; color: var(--primary); width: 90px; }
-    .duration-col { width: 90px; }
+
+    th:first-child { border-top-left-radius: 6px; }
+    th:last-child { border-top-right-radius: 6px; }
+
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    tr:hover {
+      background-color: #fdfbf7;
+    }
+
+    .time-col {
+      font-family: 'Roboto Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--primary-dark);
+      width: 100px;
+    }
+
+    .duration-col {
+      width: 100px;
+    }
+
     .btn {
-      padding: 8px 14px;
+      padding: 9px 16px;
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      font-weight: 600;
-      font-size: 0.85rem;
+      font-family: 'Roboto Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: background-color 0.2s, transform 0.1s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
-    .btn-primary { background: var(--primary); color: white; }
-    .btn-danger { background: #ef4444; color: white; }
-    .btn-secondary { background: #64748b; color: white; }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+      padding: 6px 10px;
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+
+    .btn-secondary {
+      background: #64748b;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #475569;
+    }
+
+    .btn-icon {
+      background: #f1f5f9;
+      color: var(--text);
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+    }
+
+    .btn-icon:hover {
+      background: #e2e8f0;
+    }
+
+    .actions-cell {
+      display: flex;
+      gap: 4px;
+    }
+
     .actions-bar {
       display: flex;
       justify-content: space-between;
-      margin-top: 20px;
+      margin-top: 25px;
+      padding-top: 15px;
+      border-top: 1px solid var(--border);
     }
+
+    /* Modern Print Styling */
     @media print {
-      .header-controls, .actions-bar, .btn-action { display: none !important; }
-      body { background: white; padding: 0; }
-      .container { box-shadow: none; padding: 0; max-width: 100%; }
-      input { border: none !important; background: transparent !important; }
+      body {
+        background: white;
+        padding: 0;
+      }
+
+      .container {
+        box-shadow: none;
+        padding: 0;
+        max-width: 100%;
+        border-top: none;
+      }
+
+      .header-controls, .actions-bar, .btn-action-col, .actions-cell {
+        display: none !important;
+      }
+
+      .brand-badge {
+        background-color: transparent;
+        color: var(--text);
+        border: 1px solid var(--primary);
+      }
+
+      th {
+        background-color: var(--primary) !important;
+        color: white !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      input {
+        border: none !important;
+        background: transparent !important;
+        padding: 0 !important;
+      }
+
+      .end-time-box {
+        border: none;
+        padding: 0;
+      }
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>Conducteur d'Événement — Assemblée Générale</h1>
+  <div class="header-title">
+    <h1>Conducteur d'Événement — AG 2026</h1>
+    <div class="brand-badge">Les Feux Follets</div>
+  </div>
   
   <div class="header-controls">
-    <div>
-      <label for="startTime">Heure de début :</label>
+    <div class="control-group">
+      <label for="startTime">Heure de démarrage :</label>
       <input type="time" id="startTime" value="09:00" onchange="recalculateTiming()">
     </div>
-    <div>
+    <div class="control-group">
       <label>Fin estimée :</label>
-      <span id="endTimeDisplay" style="font-weight: bold; color: var(--primary);">--:--</span>
+      <div id="endTimeDisplay" class="end-time-box">--:--</div>
     </div>
   </div>
 
@@ -102,8 +305,8 @@
         <th>Heure</th>
         <th>Durée (min)</th>
         <th>Thème / Sujet</th>
-        <th>Intervenant(s)</th>
-        <th class="btn-action">Actions</th>
+        <th>Intervenants</th>
+        <th class="btn-action-col" style="width: 110px;">Actions</th>
       </tr>
     </thead>
     <tbody id="scheduleBody"></tbody>
@@ -111,15 +314,15 @@
 
   <div class="actions-bar">
     <button class="btn btn-primary" onclick="addRow()">+ Ajouter une séquence</button>
-    <div>
-      <button class="btn btn-secondary" onclick="window.print()">Imprimer / PDF</button>
+    <div style="display: flex; gap: 10px;">
       <button class="btn btn-secondary" onclick="exportCSV()">Exporter CSV</button>
+      <button class="btn btn-primary" onclick="window.print()">Imprimer / PDF</button>
     </div>
   </div>
 </div>
 
 <script>
-  // Données initiales basées sur ton fichier Excel
+  // Initial dataset populated from the provided Excel structure
   let items = [
     { duration: 5, theme: "Accueil", speaker: "Loïc" },
     { duration: 5, theme: "Appel des signatures", speaker: "Loïc" },
@@ -143,18 +346,18 @@
       tr.innerHTML = `
         <td class="time-col" id="time-${index}">--:--</td>
         <td class="duration-col">
-          <input type="number" value="${item.duration}" min="1" style="width: 60px;" onchange="updateDuration(${index}, this.value)">
+          <input type="number" value="${item.duration}" min="1" style="width: 70px;" onchange="updateDuration(${index}, this.value)">
         </td>
         <td>
-          <input type="text" value="${item.theme}" style="width: 95%;" onchange="updateText(${index}, 'theme', this.value)">
+          <input type="text" value="${item.theme}" style="width: 98%;" onchange="updateText(${index}, 'theme', this.value)">
         </td>
         <td>
-          <input type="text" value="${item.speaker}" style="width: 95%;" onchange="updateText(${index}, 'speaker', this.value)">
+          <input type="text" value="${item.speaker}" style="width: 98%;" onchange="updateText(${index}, 'speaker', this.value)">
         </td>
-        <td class="btn-action">
-          <button class="btn btn-secondary" onclick="moveRow(${index}, -1)">▲</button>
-          <button class="btn btn-secondary" onclick="moveRow(${index}, 1)">▼</button>
-          <button class="btn btn-danger" onclick="deleteRow(${index})">✕</button>
+        <td class="actions-cell btn-action-col">
+          <button class="btn btn-icon" title="Monter" onclick="moveRow(${index}, -1)">▲</button>
+          <button class="btn btn-icon" title="Descendre" onclick="moveRow(${index}, 1)">▼</button>
+          <button class="btn btn-danger" title="Supprimer" onclick="deleteRow(${index})">✕</button>
         </td>
       `;
       tbody.appendChild(tr);
@@ -230,11 +433,11 @@
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = "conducteur_ag.csv";
+    link.download = "conducteur_ag_feux_follets.csv";
     link.click();
   }
 
-  // Initialisation au chargement
+  // Initial rendering
   render();
 </script>
 
